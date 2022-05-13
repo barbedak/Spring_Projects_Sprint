@@ -2,14 +2,14 @@ package com.example.votes.app.service;
 
 import com.example.votes.app.domain.Vote;
 import com.example.votes.app.repository.VoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class VoteService {
 
-    @Autowired
-    private VoteRepository repository;
+    private final VoteRepository repository;
 
     public boolean save(Vote vote){
         if (repository.existsByUserId(vote.getUserId())) {

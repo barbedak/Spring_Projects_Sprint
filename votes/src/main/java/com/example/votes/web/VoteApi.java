@@ -21,11 +21,9 @@ public class VoteApi {
         vote.setUserId(request.getUserId());
         vote.setValue(request.getVoteValue());
 
-        boolean isSaved = service.save(vote);
-
-        SaveVoteResponse response = new SaveVoteResponse();
-        response.setSaved(isSaved);
-
+        SaveVoteResponse response = SaveVoteResponse.builder()
+                .isSaved(service.save(vote))
+                .build();
         return response;
     }
 }

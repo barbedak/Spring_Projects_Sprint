@@ -3,6 +3,7 @@ package com.example.votes;
 import com.example.votes.app.domain.Vote;
 import com.example.votes.app.domain.VoteValue;
 import com.example.votes.app.repository.VoteRepository;
+import com.example.votes.web.dto.SaveVoteResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -10,14 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.json.JsonContent;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 class VotesApplicationTests {
@@ -46,12 +47,14 @@ class HttpRequestTest{
 		vote.setValue(VoteValue.valueOf("Y"));
 		vote.setUserId(UUID.fromString("020bba59-eae7-434e-a0d4-f74ac84467fb"));
 
+		String jsonContent = objectMapper.writeValueAsString(new SaveVoteResponse(true));
+
 		mockMvc.perform(post("/votes")
 				.content(objectMapper.writeValueAsString(vote))
 				.contentType(MediaType.APPLICATION_JSON)
 		)
-				.andExpect(jsonPath("$.saved").isBoolean())
-				.andExpect(jsonPath("$.saved").value("true"));
+				.andExpect(status().isOk())
+				.andExpect(content().json(jsonContent, true));
 	}
 
 	@Test
@@ -64,6 +67,7 @@ class HttpRequestTest{
 						.content(objectMapper.writeValueAsString(vote))
 						.contentType(MediaType.APPLICATION_JSON)
 				)
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.saved").isBoolean())
 				.andExpect(jsonPath("$.saved").value("false"));
 	}
